@@ -1,4 +1,4 @@
-package mapacl
+package acls
 
 type mapBoxACL struct {
 }

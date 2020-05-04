@@ -6,13 +6,14 @@ import (
 	"github.com/NicolasDeveloper/tracker-microservices/internal/trip/acls"
 	"github.com/NicolasDeveloper/tracker-microservices/internal/trip/models"
 	"github.com/NicolasDeveloper/tracker-microservices/internal/trip/repositories"
+	"github.com/NicolasDeveloper/tracker-microservices/pkg/dtos"
 )
 
 //ITripService interface
 type ITripService interface {
-	Start(dto sharedmodels.TripDTO) error
-	Increment(dto sharedmodels.TripDTO) error
-	Close(dto sharedmodels.TripDTO) error
+	Start(dto dtos.TripDTO) error
+	Increment(dto dtos.TripDTO) error
+	Close(dto dtos.TripDTO) error
 }
 
 //NewTripService contructor
@@ -28,7 +29,7 @@ type tripService struct {
 	tripRepository repositories.ITripRepository
 }
 
-func (service *tripService) Start(dto sharedmodels.TripDTO) error {
+func (service *tripService) Start(dto dtos.TripDTO) error {
 	startTrack := dto.GetFirstTrack()
 
 	coordenate := models.Coordenate{
@@ -36,7 +37,7 @@ func (service *tripService) Start(dto sharedmodels.TripDTO) error {
 		Longitude: startTrack.Longitude,
 	}
 
-	addressName, err := service.acls.GetAddressName(coordenate.Latitude, coordenate.Longitude)
+	addressName, err := service.mapACL.GetAddressName(coordenate.Latitude, coordenate.Longitude)
 
 	track, err := models.NewTrack(
 		coordenate,
@@ -57,7 +58,7 @@ func (service *tripService) Start(dto sharedmodels.TripDTO) error {
 		return errors.New("user identification not found")
 	}
 
-	trip, err := service.repositories.GetOpenTrip(dto.UserID)
+	trip, err := service.tripRepository.GetOpenTrip(dto.UserID)
 
 	if err != nil || trip.ID != "" {
 		return errors.New("has a trip in progress")
@@ -69,10 +70,10 @@ func (service *tripService) Start(dto sharedmodels.TripDTO) error {
 		return err
 	}
 
-	return service.repositories.Save(trip)
+	return service.tripRepository.Save(trip)
 }
 
-func (service *tripService) Increment(dto sharedmodels.TripDTO) error {
+func (service *tripService) Increment(dto dtos.TripDTO) error {
 	currentTrack := dto.GetFirstTrack()
 
 	coordenate := models.Coordenate{
@@ -80,7 +81,7 @@ func (service *tripService) Increment(dto sharedmodels.TripDTO) error {
 		Longitude: currentTrack.Longitude,
 	}
 
-	trip, err := service.repositories.GetOpenTrip(dto.UserID)
+	trip, err := service.tripRepository.GetOpenTrip(dto.UserID)
 
 	if err != nil ||
 		trip.ID == "" ||
@@ -106,10 +107,10 @@ func (service *tripService) Increment(dto sharedmodels.TripDTO) error {
 		return err
 	}
 
-	return service.repositories.UpdateTracks(trip, tracks)
+	return service.tripRepository.UpdateTracks(trip, tracks)
 }
 
-func (service *tripService) Close(dto sharedmodels.TripDTO) error {
+func (service *tripService) Close(dto dtos.TripDTO) error {
 	currentTrack := dto.GetFirstTrack()
 
 	coordenate := models.Coordenate{
@@ -117,13 +118,13 @@ func (service *tripService) Close(dto sharedmodels.TripDTO) error {
 		Longitude: currentTrack.Longitude,
 	}
 
-	trip, err := service.repositories.GetOpenTrip(dto.UserID)
+	trip, err := service.tripRepository.GetOpenTrip(dto.UserID)
 
 	if err != nil || trip.ID == "" {
 		return errors.New("trip not found")
 	}
 
-	addressName, err := service.acls.GetAddressName(coordenate.Latitude, coordenate.Longitude)
+	addressName, err := service.mapACL.GetAddressName(coordenate.Latitude, coordenate.Longitude)
 	track, err := models.NewTrack(
 		coordenate,
 		currentTrack.CurrentFuel,
@@ -143,5 +144,5 @@ func (service *tripService) Close(dto sharedmodels.TripDTO) error {
 		return err
 	}
 
-	return service.repositories.CloseTrip(trip, tracks)
+	return service.tripRepository.CloseTrip(trip, tracks)
 }

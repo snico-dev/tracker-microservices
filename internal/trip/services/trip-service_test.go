@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/NicolasDeveloper/tracker-microservices/internal/trip/models"
+	"github.com/NicolasDeveloper/tracker-microservices/pkg/dtos"
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/timeconvert"
 )
 
@@ -51,13 +52,13 @@ func TestTrip(t *testing.T) {
 
 }
 
-func getTripDTO() sharedmodels.TripDTO {
-	return sharedmodels.TripDTO{
+func getTripDTO() dtos.TripDTO {
+	return dtos.TripDTO{
 		UserID:       "123456789",
 		IdleTime:     0,
 		SeqID:        1,
 		TotalMileage: 2000,
-		Tracks: []sharedmodels.TrackDTO{
+		Tracks: []dtos.TrackDTO{
 			{
 				CurrentFuel:             0.5,
 				CurrentTripMileage:      0.10,
