@@ -1,4 +1,4 @@
-package mapacl
+package acls
 
 //IMapACL contract
 type IMapACL interface {

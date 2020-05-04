@@ -3,10 +3,9 @@ package services
 import (
 	"errors"
 
-	"github.com/NicolasDeveloper/tracker-udp-server/apps/shared/sharedmodels"
-	"github.com/NicolasDeveloper/tracker-udp-server/apps/trip/acls/mapacl"
 	"github.com/NicolasDeveloper/tracker-microservices/internal/trip/models"
 	"github.com/NicolasDeveloper/tracker-microservices/internal/trip/repositories"
+	"github.com/NicolasDeveloper/tracker-udp-server/apps/shared/sharedmodels"
 )
 
 //ITripService interface
@@ -17,7 +16,7 @@ type ITripService interface {
 }
 
 //NewTripService contructor
-func NewTripService(mapACL mapacl.IMapACL, tripRepository repositories.ITripRepository) ITripService {
+func NewTripService(mapACL acls.IMapACL, tripRepository repositories.ITripRepository) ITripService {
 	return &tripService{
 		mapACL:         mapACL,
 		tripRepository: tripRepository,
@@ -25,7 +24,7 @@ func NewTripService(mapACL mapacl.IMapACL, tripRepository repositories.ITripRepo
 }
 
 type tripService struct {
-	mapACL         mapacl.IMapACL
+	mapACL         acls.IMapACL
 	tripRepository repositories.ITripRepository
 }
 
@@ -37,7 +36,7 @@ func (service *tripService) Start(dto sharedmodels.TripDTO) error {
 		Longitude: startTrack.Longitude,
 	}
 
-	addressName, err := service.mapACL.GetAddressName(coordenate.Latitude, coordenate.Longitude)
+	addressName, err := service.acls.GetAddressName(coordenate.Latitude, coordenate.Longitude)
 
 	track, err := models.NewTrack(
 		coordenate,
@@ -124,7 +123,7 @@ func (service *tripService) Close(dto sharedmodels.TripDTO) error {
 		return errors.New("trip not found")
 	}
 
-	addressName, err := service.mapACL.GetAddressName(coordenate.Latitude, coordenate.Longitude)
+	addressName, err := service.acls.GetAddressName(coordenate.Latitude, coordenate.Longitude)
 	track, err := models.NewTrack(
 		coordenate,
 		currentTrack.CurrentFuel,
