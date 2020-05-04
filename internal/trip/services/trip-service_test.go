@@ -4,9 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/NicolasDeveloper/tracker-microservices/pkg/sharedmodels"
+	"github.com/NicolasDeveloper/tracker-microservices/internal/trip/models"
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/timeconvert"
-	"github.com/NicolasDeveloper/tracker-udp-server/apps/trip/models"
 )
 
 func TestTrip(t *testing.T) {

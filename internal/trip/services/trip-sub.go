@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/NicolasDeveloper/tracker-udp-server/apps/trip/models"
+	"github.com/NicolasDeveloper/tracker-microservices/internal/trip/models"
 	"github.com/stretchr/testify/mock"
 )
 

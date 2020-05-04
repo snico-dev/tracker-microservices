@@ -3,9 +3,9 @@ package services
 import (
 	"errors"
 
+	"github.com/NicolasDeveloper/tracker-microservices/internal/trip/acls"
 	"github.com/NicolasDeveloper/tracker-microservices/internal/trip/models"
 	"github.com/NicolasDeveloper/tracker-microservices/internal/trip/repositories"
-	"github.com/NicolasDeveloper/tracker-udp-server/apps/shared/sharedmodels"
 )
 
 //ITripService interface
