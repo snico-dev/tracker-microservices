@@ -3,8 +3,7 @@ package command
 import (
 	"errors"
 	"strings"
-
-	"github.com/NicolasDeveloper/tracker-udp-server/apps/shared/convert"
+	"github.com/NicolasDeveloper/tracker-microservices/pkg/convert"
 )
 
 //Parser interface of command parser

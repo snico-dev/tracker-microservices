@@ -179,7 +179,7 @@ func initilizeDatabse(ctx dbcontext.DbContext) {
 }
 
 func createDatabaseIndex(ctx dbcontext.DbContext) {
-	deviceCollection, err := ctx.GetCollection(trackmodels.Device{})
+	deviceCollection, err := ctx.GetCollection(sharedmodels.Device{})
 
 	if err != nil {
 		return

@@ -4,8 +4,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/NicolasDeveloper/tracker-udp-server/apps/shared/convert"
-	"github.com/NicolasDeveloper/tracker-udp-server/apps/shared/timeconvert"
+	"github.com/NicolasDeveloper/tracker-microservices/pkg/timeconvert"
+	"github.com/NicolasDeveloper/tracker-microservices/pkg/convert"
 )
 
 func TestResponseCommand(t *testing.T) {

@@ -3,11 +3,9 @@ package report
 import (
 	"encoding/hex"
 	"strings"
-
-	"github.com/NicolasDeveloper/tracker-udp-server/apps/shared/crc"
-	"github.com/NicolasDeveloper/tracker-udp-server/apps/shared/timeconvert"
-	"github.com/NicolasDeveloper/tracker-udp-server/apps/shared/utils"
-	"github.com/NicolasDeveloper/tracker-udp-server/interfaces/tracker-tcp/command"
+	"github.com/NicolasDeveloper/tracker-microservices/pkg/timeconvert"
+	"github.com/NicolasDeveloper/tracker-microservices/pkg/command"
+	"github.com/NicolasDeveloper/tracker-microservices/pkg/utils"
 )
 
 // RetriveLogin return login package response

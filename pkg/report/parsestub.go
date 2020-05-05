@@ -1,6 +1,8 @@
 package report
 
-import "github.com/NicolasDeveloper/tracker-udp-server/interfaces/tracker-tcp/command"
+import (
+	"github.com/NicolasDeveloper/tracker-microservices/pkg/command"
+)
 
 type parseStub struct {
 	command.Parser
