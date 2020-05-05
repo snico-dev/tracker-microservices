@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"math/rand"
@@ -8,17 +9,20 @@ import (
 	"os"
 	"time"
 
+	triprepositories "github.com/NicolasDeveloper/tracker-microservices/internal/register/repositories"
 	trackservice "github.com/NicolasDeveloper/tracker-microservices/internal/tracker-communication/services"
 	"github.com/NicolasDeveloper/tracker-microservices/internal/trip/acls"
-	triprepositories "github.com/NicolasDeveloper/tracker-microservices/internal/register/repositories"
-	registerrepositories "github.com/NicolasDeveloper/tracker-microservices/internal/trip/repositories"
 	registermodels "github.com/NicolasDeveloper/tracker-microservices/internal/trip/models"
+	registerrepositories "github.com/NicolasDeveloper/tracker-microservices/internal/trip/repositories"
 	tripservice "github.com/NicolasDeveloper/tracker-microservices/internal/trip/services"
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/command"
+	sharedmodels "github.com/NicolasDeveloper/tracker-microservices/pkg/models"
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/report"
 	sharedrepositories "github.com/NicolasDeveloper/tracker-microservices/pkg/repositories"
-	sharedmodels "github.com/NicolasDeveloper/tracker-microservices/pkg/models"
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/timeconvert"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/database/dbcontext"
 )
@@ -40,7 +44,7 @@ func handleConnection(conn net.Conn, ctx dbcontext.DbContext) {
 
 	deviceRepository, err := sharedrepositories.NewDeviceRepository(ctx)
 	tripRepository, err := triprepositories.NewTripRepository(ctx)
-	tripService = tripservice.NewTripService(mapboxACL, tripRepository)
+	tripService := tripservice.NewTripService(mapboxACL, tripRepository)
 	trackService := trackservice.NewTrackService(deviceRepository)
 
 	deviceID, err := trackService.GetDeviceID(bufferpack)
