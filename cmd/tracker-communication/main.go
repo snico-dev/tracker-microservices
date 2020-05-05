@@ -17,7 +17,6 @@ import (
 	sharedrepositories "github.com/NicolasDeveloper/tracker-microservices/pkg/repositories"
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/timeconvert"
 
-	// trackerrepositories "github.com/NicolasDeveloper/tracker-microservices/internal/tracker-communication/repositories"
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/database/dbcontext"
 )
 
