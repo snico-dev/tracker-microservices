@@ -3,8 +3,10 @@ package report
 import (
 	"encoding/hex"
 	"strings"
-	"github.com/NicolasDeveloper/tracker-microservices/pkg/timeconvert"
+
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/command"
+	"github.com/NicolasDeveloper/tracker-microservices/pkg/crc"
+	"github.com/NicolasDeveloper/tracker-microservices/pkg/timeconvert"
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/utils"
 )
 
