@@ -23,13 +23,13 @@ type ITrackService interface {
 }
 
 type trackService struct {
-	trackRepository repositories.IDeviceRepository
+	deviceRepository repositories.IDeviceRepository
 }
 
 //NewTrackService contructor
-func NewTrackService(trackRepository repositories.IDeviceRepository) ITrackService {
+func NewTrackService(deviceRepository repositories.IDeviceRepository) ITrackService {
 	return &trackService{
-		trackRepository: trackRepository,
+		deviceRepository: deviceRepository,
 	}
 }
 
@@ -179,12 +179,12 @@ func (service *trackService) GetDeviceID(bufferpack []byte) (string, error) {
 }
 
 func (service *trackService) GetLoggedDevice(deviceID string) (sharedmodels.Device, error) {
-	repo := service.trackRepository
+	repo := service.deviceRepository
 	return repo.GetLoggedDevice(deviceID)
 }
 
 func (service *trackService) DoLogin(deviceID string) (bool, error) {
-	repo := service.trackRepository
+	repo := service.deviceRepository
 
 	device, err := repo.GetActiveDevice(deviceID)
 

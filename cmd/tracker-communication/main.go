@@ -38,7 +38,7 @@ func handleConnection(conn net.Conn, ctx dbcontext.DbContext) {
 
 	deviceRepository, err := sharedrepositories.NewDeviceRepository(ctx)
 	tripRepository, err := triprepositories.NewTripRepository(ctx)
-	_ = tripservice.NewTripService(mapboxACL, tripRepository)
+	tripService = tripservice.NewTripService(mapboxACL, tripRepository)
 	trackService := trackservice.NewTrackService(deviceRepository)
 
 	deviceID, err := trackService.GetDeviceID(bufferpack)
@@ -54,62 +54,58 @@ func handleConnection(conn net.Conn, ctx dbcontext.DbContext) {
 		if resp, err := report.RetriveLogin(bufferpack, timeConvert, parser); err == nil {
 			conn.Write(resp)
 		}
+	} else if parser.IsAlarmReport(bufferpack) == true {
+		model, err := trackService.ParseAlarmReport(bufferpack)
+
+		if err == nil {
+			size := len(bufferpack) - 1
+			buffersliced := bufferpack[27:size]
+			model.UserID = device.UserID
+			model.DeviceID = device.ID
+
+			if result, err := trackService.IsIgnitionOnAlarm(buffersliced); result == true && err == nil {
+				if device.Logged == false {
+					queryResp, err := querySearchVinCode(bufferpack)
+					if err == nil {
+						conn.Write(queryResp)
+					}
+				}
+
+				err = tripService.Start(model)
+			}
+
+			if result, err := trackService.IsIgnitionOffAlarm(buffersliced); result == true && err == nil {
+				err = tripService.Close(model)
+			}
+		}
+	} else if parser.IsGpsReport(bufferpack) == true {
+		model, err := trackService.ParseGpsReport(bufferpack)
+		model.UserID = device.UserID
+		model.DeviceID = device.ID
+
+		if err == nil {
+			err = tripService.Increment(model)
+		}
+	} else if parser.IsQueryReport(bufferpack) == true {
+		if device.Logged == false {
+			tlvDescription, err := trackService.ParseQueryReport(bufferpack)
+			if tlvDescription.VinCode != "" && err == nil {
+				_, err = trackService.DoLogin(deviceID)
+			}
+		}
 	}
-
-	fmt.Println(err)
-
-	// else if parser.IsAlarmReport(bufferpack) == true {
-	// 	model, err := trackService.ParseAlarmReport(bufferpack)
-
-	// 	if err == nil {
-	// 		size := len(bufferpack) - 1
-	// 		buffersliced := bufferpack[27:size]
-	// 		model.UserID = device.UserID
-	// 		model.DeviceID = device.ID
-
-	// 		if result, err := trackService.IsIgnitionOnAlarm(buffersliced); result == true && err == nil {
-	// 			if device.Logged == false {
-	// 				queryResp, err := querySearchVinCode(bufferpack)
-	// 				if err == nil {
-	// 					conn.Write(queryResp)
-	// 				}
-	// 			}
-
-	// 			err = tripService.Start(model)
-	// 		}
-
-	// 		if result, err := trackService.IsIgnitionOffAlarm(buffersliced); result == true && err == nil {
-	// 			err = tripService.Close(model)
-	// 		}
-	// 	}
-	// } else if parser.IsGpsReport(bufferpack) == true {
-	// 	model, err := trackService.ParseGpsReport(bufferpack)
-	// 	model.UserID = device.UserID
-	// 	model.DeviceID = device.ID
-
-	// 	if err == nil {
-	// 		err = tripService.Increment(model)
-	// 	}
-	// } else if parser.IsQueryReport(bufferpack) == true {
-	// 	if device.Logged == false {
-	// 		tlvDescription, err := trackService.ParseQueryReport(bufferpack)
-	// 		if tlvDescription.VinCode != "" && err == nil {
-	// 			_, err = trackService.DoLogin(deviceID)
-	// 		}
-	// 	}
-	// }
 
 	// recursive func to handle io.EOF for random disconnects
 	handleConnection(conn, ctx)
 }
 
-// func querySearchVinCode(bufferpack []byte) ([]byte, error) {
-// 	lengthHex := "0x2800"
-// 	sequenceHex := "0x0200"
-// 	queryNumberHex := "0x03"
-// 	parametersHex := "0x012001160115"
-// 	return report.QueryCommand(bufferpack, lengthHex, sequenceHex, queryNumberHex, parametersHex, command.NewParser())
-// }
+func querySearchVinCode(bufferpack []byte) ([]byte, error) {
+	lengthHex := "0x2800"
+	sequenceHex := "0x0200"
+	queryNumberHex := "0x03"
+	parametersHex := "0x012001160115"
+	return report.QueryCommand(bufferpack, lengthHex, sequenceHex, queryNumberHex, parametersHex, command.NewParser())
+}
 
 func main() {
 	hostName := os.Getenv("HOSTNAME")
