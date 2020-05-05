@@ -10,11 +10,14 @@ import (
 
 	trackservice "github.com/NicolasDeveloper/tracker-microservices/internal/tracker-communication/services"
 	"github.com/NicolasDeveloper/tracker-microservices/internal/trip/acls"
-	triprepositories "github.com/NicolasDeveloper/tracker-microservices/internal/trip/repositories"
+	triprepositories "github.com/NicolasDeveloper/tracker-microservices/internal/register/repositories"
+	registerrepositories "github.com/NicolasDeveloper/tracker-microservices/internal/trip/repositories"
+	registermodels "github.com/NicolasDeveloper/tracker-microservices/internal/trip/models"
 	tripservice "github.com/NicolasDeveloper/tracker-microservices/internal/trip/services"
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/command"
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/report"
 	sharedrepositories "github.com/NicolasDeveloper/tracker-microservices/pkg/repositories"
+	sharedmodels "github.com/NicolasDeveloper/tracker-microservices/pkg/models"
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/timeconvert"
 
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/database/dbcontext"
@@ -147,44 +150,44 @@ func main() {
 }
 
 func initilizeDatabse(ctx dbcontext.DbContext) {
-	// userRepository, err := registerrepository.NewUserRepository(ctx)
-	// deviceRepository, err := trackrepository.NewDeviceRepository(ctx)
+	userRepository, err := registerrepositories.NewUserRepository(ctx)
+	deviceRepository, err := sharedrepositories.NewDeviceRepository(ctx)
 
-	// device, err := deviceRepository.GetActiveDevice("213GDP2018022421")
+	device, err := deviceRepository.GetActiveDevice("213GDP2018022421")
 
-	// if device.ID != "" {
-	// 	return
-	// }
+	if device.ID != "" {
+		return
+	}
 
-	// user, err := registermodels.NewUser()
+	user, err := registermodels.NewUser()
 
-	// if err == nil {
-	// 	userRepository.Create(user)
-	// }
+	if err == nil {
+		userRepository.Create(user)
+	}
 
-	// device, err = trackmodels.NewDevice("213GDP2018022421", user.ID)
+	device, err = sharedmodels.NewDevice("213GDP2018022421", user.ID)
 
-	// if err != nil {
-	// 	return
-	// }
+	if err != nil {
+		return
+	}
 
-	// deviceRepository.CreateDevice(device)
+	deviceRepository.CreateDevice(device)
 }
 
 func createDatabaseIndex(ctx dbcontext.DbContext) {
-	// deviceCollection, err := ctx.GetCollection(trackmodels.Device{})
+	deviceCollection, err := ctx.GetCollection(trackmodels.Device{})
 
-	// if err != nil {
-	// 	return
-	// }
+	if err != nil {
+		return
+	}
 
-	// deviceCollection.Indexes().CreateOne(
-	// 	context.Background(),
-	// 	mongo.IndexModel{
-	// 		Keys: bson.M{
-	// 			"pin_code": 1,
-	// 		},
-	// 		Options: options.Index().SetUnique(true),
-	// 	},
-	// )
+	deviceCollection.Indexes().CreateOne(
+		context.Background(),
+		mongo.IndexModel{
+			Keys: bson.M{
+				"pin_code": 1,
+			},
+			Options: options.Index().SetUnique(true),
+		},
+	)
 }
