@@ -3,7 +3,8 @@ package controllers
 import (
 	"net/http"
 
-	"github.com/laibulle/kitties/app/core"
+	"github.com/NicolasDeveloper/tracker-microservices/internal/tracker-api/core"
+	"github.com/NicolasDeveloper/tracker-microservices/pkg/database/dbcontext"
 )
 
 // TripRouter handle trip resources
@@ -12,11 +13,11 @@ type TripRouter struct {
 }
 
 // NewTripRouter instance
-func NewTripRouter(ctx dbcontext) core.Bundle {
+func NewTripRouter(ctx dbcontext.DbContext) core.Bundle {
 	ctrl := NewTripController(ctx)
 
 	r := []core.Route{
-		core.Route{
+		{
 			Method:  http.MethodGet,
 			Path:    "/trips",
 			Handler: ctrl.Index,
