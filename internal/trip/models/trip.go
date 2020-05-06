@@ -12,22 +12,22 @@ import (
 //Trip data type
 type Trip struct {
 	ID                string     `bson:"_id" json:"id"`
-	UserID            string     `bson:"user_id"`
-	DeviceID          string     `bson:"device_id"`
-	SeqID             string     `bson:"seq_id"`
-	StartAt           time.Time  `bson:"start_at"`
-	UpdateAt          time.Time  `bson:"update_at"`
-	ClosedAt          time.Time  `bson:"closed_at"`
-	Open              bool       `bson:"open"`
-	TotalGpsMileage   float64    `bson:"total_gps_mileage"`
-	TotalMileage      float64    `bson:"total_mileage"`
-	MaxSpeed          float64    `bson:"max_speed"`
-	MaxRPM            float64    `bson:"max_rpm"`
-	IdleTime          float64    `bson:"idle_time"`
-	CurrentCoordinate Coordenate `bson:"current_coordinate"`
-	StartTrack        Track      `bson:"start_track"`
-	EndTrack          Track      `bson:"end_track"`
-	Tracks            []Track    `bson:"tracks"`
+	UserID            string     `bson:"user_id" json:"user_id"`
+	DeviceID          string     `bson:"device_id" json:"device_id"`
+	SeqID             string     `bson:"seq_id" json:"seq_id"`
+	StartAt           time.Time  `bson:"start_at" json:"start_at"`
+	UpdateAt          time.Time  `bson:"update_at" json:"update_at"`
+	ClosedAt          time.Time  `bson:"closed_at" json:"closed_at"`
+	Open              bool       `bson:"open" json:"open"`
+	TotalGpsMileage   float64    `bson:"total_gps_mileage" json:"total_gps_mileage"`
+	TotalMileage      float64    `bson:"total_mileage" json:"total_mileage"`
+	MaxSpeed          float64    `bson:"max_speed" json:"max_speed"`
+	MaxRPM            float64    `bson:"max_rpm" json:"max_rpm"`
+	IdleTime          float64    `bson:"idle_time" json:"idle_time"`
+	CurrentCoordinate Coordenate `bson:"current_coordinate" json:"current_coordinate"`
+	StartTrack        Track      `bson:"start_track" json:"start_track"`
+	EndTrack          Track      `bson:"end_track" json:"end_track"`
+	Tracks            []Track    `bson:"tracks" json:"tracks"`
 }
 
 //NewTrip constructor

@@ -9,15 +9,15 @@ import (
 
 //Track model type
 type Track struct {
-	Coordenate              Coordenate `bson:"coordenate"`
-	AddressName             string     `bson:"address_name"`
-	CreateAt                time.Time  `bson:"create_at"`
-	CurrentTripMileage      float64    `bson:"current_trip_mileage"`
-	TotalTripMileage        float64    `bson:"total_trip_mileage"`
-	CurrentFuel             float64    `bson:"current_fuel"`
-	PositionSendingDateTime time.Time  `bson:"position_sending_date_time"`
-	Speed                   float64    `bson:"speed"`
-	RPM                     float64    `bson:"rpm"`
+	Coordenate              Coordenate `bson:"coordenate" json:"coordenate"`
+	AddressName             string     `bson:"address_name" json:"address_name"`
+	CreateAt                time.Time  `bson:"create_at" json:"create_at"`
+	CurrentTripMileage      float64    `bson:"current_trip_mileage" json:"current_trip_mileage"`
+	TotalTripMileage        float64    `bson:"total_trip_mileage" json:"total_trip_mileage"`
+	CurrentFuel             float64    `bson:"current_fuel" json:"current_fuel"`
+	PositionSendingDateTime time.Time  `bson:"position_sending_date_time" json:"position_sending_date_time"`
+	Speed                   float64    `bson:"speed" json:"speed"`
+	RPM                     float64    `bson:"rpm" json:"rpm"`
 }
 
 //NewTrack constructor
