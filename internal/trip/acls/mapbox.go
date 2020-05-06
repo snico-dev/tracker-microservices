@@ -20,8 +20,12 @@ func NewMapBoxACL() IMapACL {
 	}
 }
 
+func toString(num float64) string {
+	return strconv.FormatFloat(num, 'f', -1, 64)
+}
+
 func (mp *mapBoxACL) GetAddressName(latitude float64, longitude float64) (string, error) {
-	endpoint := mp.url + "mapbox.places/" + strconv.FormatFloat(longitude, 'g', 1, 64) + "," + strconv.FormatFloat(latitude, 'g', 1, 64) + ".json?access_token=" + mp.token
+	endpoint := mp.url + "/mapbox.places/" + toString(longitude) + "," + toString(latitude) + ".json?access_token=" + mp.token
 	resp, err := http.Get(endpoint)
 
 	if err != nil {
