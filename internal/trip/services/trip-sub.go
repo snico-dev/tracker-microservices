@@ -27,6 +27,12 @@ func (repo *TripRepositorySTUB) Update(trip models.Trip) error {
 	return args.Error(0)
 }
 
+//GetTripsByUser save
+func (repo *TripRepositorySTUB) GetTripsByUser(userID string) ([]models.Trip, error) {
+	args := repo.Called(userID)
+	return args.Get(0).([]models.Trip), args.Error(1)
+}
+
 //GetOpenTrip save
 func (repo *TripRepositorySTUB) GetOpenTrip(userID string) (models.Trip, error) {
 	args := repo.Called(userID)

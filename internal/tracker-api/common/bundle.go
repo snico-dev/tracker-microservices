@@ -1,4 +1,4 @@
-package core
+package common
 
 //Bundle router slice
 type Bundle interface {

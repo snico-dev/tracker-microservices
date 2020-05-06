@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/NicolasDeveloper/tracker-microservices/pkg/database/dbcontext"
 	"github.com/NicolasDeveloper/tracker-microservices/internal/trip/models"
+	"github.com/NicolasDeveloper/tracker-microservices/pkg/database/dbcontext"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -124,4 +124,23 @@ func (repo *tripReposiory) GetOpenTrip(userID string) (models.Trip, error) {
 	}
 
 	return trip, err
+}
+
+//GetTripsByUser save
+func (repo *tripReposiory) GetTripsByUser(userID string) ([]models.Trip, error) {
+	collection, err := repo.ctx.GetCollection(&models.Trip{})
+
+	matchStage := bson.D{{"$match", bson.D{{"user_id", userID}}}}
+
+	ctx := context.TODO()
+	cursor, err := collection.Aggregate(
+		ctx,
+		mongo.Pipeline{matchStage},
+	)
+	defer cursor.Close(ctx)
+
+	var results []models.Trip
+	err = cursor.All(ctx, &results)
+
+	return results, err
 }

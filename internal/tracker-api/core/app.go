@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/NicolasDeveloper/tracker-microservices/internal/tracker-api/common"
 	"github.com/NicolasDeveloper/tracker-microservices/internal/tracker-api/controllers"
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/database/dbcontext"
 	"github.com/gorilla/mux"
@@ -48,6 +49,6 @@ func (a *App) Run(port string) *App {
 	return a
 }
 
-func initBundles(ctx dbcontext.DbContext) []Bundle {
-	return []Bundle{controllers.NewTripRouter(ctx)}
+func initBundles(ctx dbcontext.DbContext) []common.Bundle {
+	return []common.Bundle{controllers.NewTripRouter(ctx)}
 }
