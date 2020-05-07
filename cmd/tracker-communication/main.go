@@ -48,7 +48,7 @@ func handleConnection(conn net.Conn, ctx dbcontext.DbContext) {
 	trackService := trackservice.NewTrackService(deviceRepository)
 
 	deviceID, err := trackService.GetDeviceID(bufferpack)
-	device, err := deviceRepository.GetActiveDevice(deviceID)
+	device, err := deviceRepository.GetActiveDeviceByCode(deviceID)
 
 	if device.ID == "" {
 		log.Println("device not found..")
@@ -69,8 +69,18 @@ func handleConnection(conn net.Conn, ctx dbcontext.DbContext) {
 			model.UserID = device.UserID
 			model.DeviceID = device.ID
 
+			if result, err := trackService.IsPowerOnAlarm(buffersliced); result == true && err == nil {
+				trackService.PlugDevice(device.ID)
+				fmt.Println("login")
+			}
+
+			if result, err := trackService.IsPowerOffAlarm(buffersliced); result == true && err == nil {
+				trackService.UnPlugDevice(device.ID)
+				fmt.Println("logout")
+			}
+
 			if result, err := trackService.IsIgnitionOnAlarm(buffersliced); result == true && err == nil {
-				if device.Logged == false {
+				if device.Plugged == false {
 					queryResp, err := querySearchVinCode(bufferpack)
 					if err == nil {
 						conn.Write(queryResp)
@@ -92,14 +102,15 @@ func handleConnection(conn net.Conn, ctx dbcontext.DbContext) {
 		if err == nil {
 			err = tripService.Increment(model)
 		}
-	} else if parser.IsQueryReport(bufferpack) == true {
-		if device.Logged == false {
-			tlvDescription, err := trackService.ParseQueryReport(bufferpack)
-			if tlvDescription.VinCode != "" && err == nil {
-				_, err = trackService.DoLogin(deviceID)
-			}
-		}
 	}
+	// else if parser.IsQueryReport(bufferpack) == true {
+	// 	if device.Plugged == false {
+	// 		tlvDescription, err := trackService.ParseQueryReport(bufferpack)
+	// 		if tlvDescription.VinCode != "" && err == nil {
+	// 			_, err = trackService.PlugDevice(deviceID)
+	// 		}
+	// 	}
+	// }
 
 	// recursive func to handle io.EOF for random disconnects
 	handleConnection(conn, ctx)
@@ -157,7 +168,7 @@ func initilizeDatabse(ctx dbcontext.DbContext) {
 	userRepository, err := registerrepositories.NewUserRepository(ctx)
 	deviceRepository, err := sharedrepositories.NewDeviceRepository(ctx)
 
-	device, err := deviceRepository.GetActiveDevice("213GDP2018022421")
+	device, err := deviceRepository.GetActiveDeviceByCode("213GDP2018022421")
 
 	if device.ID != "" {
 		return

@@ -38,6 +38,10 @@ func (mp *mapBoxACL) GetAddressName(latitude float64, longitude float64) (string
 	var mapboxPlacesDTO MapboxPlacesDTO
 	json.Unmarshal(bodyBytes, &mapboxPlacesDTO)
 
+	if mapboxPlacesDTO.Type == "" || len(mapboxPlacesDTO.Features) == 0 {
+		return "", nil
+	}
+
 	addressName := mapboxPlacesDTO.Features[0].PlaceName
 
 	return addressName, err

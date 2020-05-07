@@ -16,9 +16,12 @@ type ITrackService interface {
 	ParseAlarmReport(bufferpack []byte) (dtos.TripDTO, error)
 	ParseQueryReport(bufferpack []byte) (models.TLVDescription, error)
 	IsIgnitionOnAlarm(bufferpack []byte) (bool, error)
+	IsPowerOnAlarm(bufferpack []byte) (bool, error)
+	IsPowerOffAlarm(bufferpack []byte) (bool, error)
 	IsIgnitionOffAlarm(bufferpack []byte) (bool, error)
 	GetLoggedDevice(deviceID string) (sharedmodels.Device, error)
-	DoLogin(deviceID string) (bool, error)
+	PlugDevice(deviceID string) (bool, error)
+	UnPlugDevice(deviceID string) (bool, error)
 	GetDeviceID(bufferpack []byte) (string, error)
 }
 
@@ -103,40 +106,52 @@ func (service *trackService) ParseAlarmReport(bufferpack []byte) (dtos.TripDTO, 
 	}, err
 }
 
-func (service *trackService) IsIgnitionOnAlarm(bufferpack []byte) (bool, error) {
+func getAlarmType(bufferpack []byte) string {
 	repo := NewReport()
 
 	reportData, err := repo.GetAlarmReport(bufferpack)
 
-	if reportData.AlarmCount == 0 {
-		return false, err
+	if err != nil || reportData.AlarmCount == 0 {
+		return ""
 	}
 
 	alarm := reportData.AlarmArray[0]
 
-	if alarm.AlarmType == "0x16" {
+	return alarm.AlarmType
+}
+
+func (service *trackService) IsPowerOnAlarm(bufferpack []byte) (bool, error) {
+	alarmType := getAlarmType(bufferpack)
+
+	if alarmType == "0x09" {
 		return true, nil
 	}
 
-	return false, err
+	return false, nil
+}
+
+func (service *trackService) IsPowerOffAlarm(bufferpack []byte) (bool, error) {
+	if getAlarmType(bufferpack) == "0x0e" || getAlarmType(bufferpack) == "0x0E" {
+		return true, nil
+	}
+
+	return false, nil
+}
+
+func (service *trackService) IsIgnitionOnAlarm(bufferpack []byte) (bool, error) {
+	if getAlarmType(bufferpack) == "0x16" {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 func (service *trackService) IsIgnitionOffAlarm(bufferpack []byte) (bool, error) {
-	repo := NewReport()
-
-	reportData, err := repo.GetAlarmReport(bufferpack)
-
-	if reportData.AlarmCount == 0 {
-		return false, err
-	}
-
-	alarm := reportData.AlarmArray[0]
-
-	if alarm.AlarmType == "0x17" {
+	if getAlarmType(bufferpack) == "0x17" {
 		return true, nil
 	}
 
-	return false, err
+	return false, nil
 }
 
 func (service *trackService) ParseQueryReport(bufferpack []byte) (models.TLVDescription, error) {
@@ -183,7 +198,7 @@ func (service *trackService) GetLoggedDevice(deviceID string) (sharedmodels.Devi
 	return repo.GetLoggedDevice(deviceID)
 }
 
-func (service *trackService) DoLogin(deviceID string) (bool, error) {
+func (service *trackService) PlugDevice(deviceID string) (bool, error) {
 	repo := service.deviceRepository
 
 	device, err := repo.GetActiveDevice(deviceID)
@@ -192,7 +207,27 @@ func (service *trackService) DoLogin(deviceID string) (bool, error) {
 		return false, err
 	}
 
-	err = device.DoLogin()
+	err = device.Plug()
+
+	if err != nil {
+		return false, err
+	}
+
+	err = repo.Update(device)
+
+	return true, err
+}
+
+func (service *trackService) UnPlugDevice(deviceID string) (bool, error) {
+	repo := service.deviceRepository
+
+	device, err := repo.GetActiveDevice(deviceID)
+
+	if err != nil {
+		return false, err
+	}
+
+	err = device.UnPlug()
 
 	if err != nil {
 		return false, err

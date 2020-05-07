@@ -24,15 +24,23 @@ func NewDeviceRepository(ctx dbcontext.DbContext) (IDeviceRepository, error) {
 func (repo *deviceRepository) GetLoggedDevice(deviceID string) (models.Device, error) {
 	collection, err := repo.ctx.GetCollection(models.Device{})
 	device := models.Device{}
-	err = collection.FindOne(context.TODO(), bson.M{"device_id": deviceID, "logged": true}).Decode(&device)
+	err = collection.FindOne(context.TODO(), bson.M{"device_id": deviceID, "plugged": true}).Decode(&device)
 	return device, err
 }
 
 //GetActiveDevice search for device in database
-func (repo *deviceRepository) GetActiveDevice(deviceID string) (models.Device, error) {
+func (repo *deviceRepository) GetActiveDevice(id string) (models.Device, error) {
 	collection, err := repo.ctx.GetCollection(models.Device{})
 	device := models.Device{}
-	err = collection.FindOne(context.TODO(), bson.M{"device_id": deviceID, "active": true}).Decode(&device)
+	err = collection.FindOne(context.TODO(), bson.M{"_id": id, "active": true}).Decode(&device)
+	return device, err
+}
+
+//GetActiveDeviceByCode search for device in database
+func (repo *deviceRepository) GetActiveDeviceByCode(id string) (models.Device, error) {
+	collection, err := repo.ctx.GetCollection(models.Device{})
+	device := models.Device{}
+	err = collection.FindOne(context.TODO(), bson.M{"device_id": id, "active": true}).Decode(&device)
 	return device, err
 }
 
@@ -50,11 +58,27 @@ func (repo *deviceRepository) CreateDevice(device models.Device) error {
 
 //Update update method
 func (repo *deviceRepository) Update(device models.Device) error {
-	collection, error := repo.ctx.GetCollection(device)
+	collection, err := repo.ctx.GetCollection(device)
 	filter := bson.M{"_id": bson.M{"$eq": device.ID}}
-	_, err := collection.UpdateOne(context.TODO(), filter, device)
+	update := bson.D{{
+		"$set",
+		bson.D{
+			{"update_at", device.UpdateAt},
+			{"plugged", device.Plugged},
+			{"active", device.Active},
+			{"activation_pin_code", device.ActivationPINCode},
+		},
+	}}
+
+	_, err = collection.UpdateOne(
+		context.Background(),
+		filter,
+		update,
+	)
+
 	if err != nil {
 		log.Fatal(err)
 	}
-	return error
+
+	return err
 }

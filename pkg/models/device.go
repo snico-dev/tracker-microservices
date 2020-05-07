@@ -15,7 +15,7 @@ type Device struct {
 	DeviceID          string    `bson:"device_id"`
 	UpdateAt          time.Time `bson:"update_at"`
 	CreateAt          time.Time `bson:"create_at"`
-	Logged            bool      `bson:"logged"`
+	Plugged           bool      `bson:"plugged"`
 	Active            bool      `bson:"active"`
 	UserID            string    `bson:"user_id"`
 	ActivationPINCode string    `bson:"activation_pin_code"`
@@ -29,24 +29,25 @@ func NewDevice(deviceID string, userID string) (Device, error) {
 		CreateAt:          time.Now().In(timeconvert.GetLocation()),
 		UpdateAt:          time.Now().In(timeconvert.GetLocation()),
 		DeviceID:          deviceID,
-		Logged:            false,
+		Plugged:           false,
 		Active:            true,
 		UserID:            userID,
 		ActivationPINCode: encodeToString(6),
 	}, nil
 }
 
-//DoLogin do login
-func (device *Device) DoLogin() error {
+//Plug do login
+func (device *Device) Plug() error {
 	device.UpdateAt = time.Now().In(timeconvert.GetLocation())
-	device.Logged = true
+	device.Plugged = true
 	return nil
 }
 
-//DoLogout do logout
-func (device *Device) DoLogout() {
+//UnPlug do logout
+func (device *Device) UnPlug() error {
 	device.UpdateAt = time.Now().In(timeconvert.GetLocation())
-	device.Logged = false
+	device.Plugged = false
+	return nil
 }
 
 //Inactive inactive device in database

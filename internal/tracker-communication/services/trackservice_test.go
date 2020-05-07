@@ -16,12 +16,17 @@ func newDeviceRepositoryStub() repositories.IDeviceRepository {
 	return &deviceRepositoryStub{}
 }
 
-func (repo *deviceRepositoryStub) GetLoggedDevice(deviceID string) (sharedmodels.Device, error) {
+func (repo *deviceRepositoryStub) GetLoggedDevice(id string) (sharedmodels.Device, error) {
 	return sharedmodels.Device{}, nil
 }
 
 //GetActiveDevice search for device in database
 func (repo *deviceRepositoryStub) GetActiveDevice(deviceID string) (sharedmodels.Device, error) {
+	return sharedmodels.Device{}, nil
+}
+
+//GetActiveDevice search for device in database
+func (repo *deviceRepositoryStub) GetActiveDeviceByCode(deviceID string) (sharedmodels.Device, error) {
 	return sharedmodels.Device{}, nil
 }
 
