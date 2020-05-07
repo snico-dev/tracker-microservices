@@ -44,6 +44,14 @@ func (repo *deviceRepository) GetActiveDeviceByCode(id string) (models.Device, e
 	return device, err
 }
 
+//GetActiveDeviceByPINCode search for device in database
+func (repo *deviceRepository) GetActiveDeviceByPINCode(pinCode string) (models.Device, error) {
+	collection, err := repo.ctx.GetCollection(models.Device{})
+	device := models.Device{}
+	err = collection.FindOne(context.TODO(), bson.M{"activation_pin_code": pinCode, "active": true}).Decode(&device)
+	return device, err
+}
+
 //CreateDevice search for device in database
 func (repo *deviceRepository) CreateDevice(device models.Device) error {
 	collection, error := repo.ctx.GetCollection(device)

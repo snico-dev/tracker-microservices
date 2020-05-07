@@ -29,7 +29,7 @@ func (mp *mapBoxACL) GetAddressName(latitude float64, longitude float64) (string
 	resp, err := http.Get(endpoint)
 
 	if err != nil {
-		return "", err
+		return "Endereço não encontrado", err
 	}
 
 	defer resp.Body.Close()
@@ -39,7 +39,7 @@ func (mp *mapBoxACL) GetAddressName(latitude float64, longitude float64) (string
 	json.Unmarshal(bodyBytes, &mapboxPlacesDTO)
 
 	if mapboxPlacesDTO.Type == "" || len(mapboxPlacesDTO.Features) == 0 {
-		return "", nil
+		return "Endereço não encontrado", nil
 	}
 
 	addressName := mapboxPlacesDTO.Features[0].PlaceName

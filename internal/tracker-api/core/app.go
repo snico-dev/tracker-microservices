@@ -50,5 +50,8 @@ func (a *App) Run(port string) *App {
 }
 
 func initBundles(ctx dbcontext.DbContext) []common.Bundle {
-	return []common.Bundle{controllers.NewTripRouter(ctx)}
+	return []common.Bundle{
+		controllers.NewTripRouter(ctx),
+		controllers.NewDeviceRouter(ctx),
+	}
 }

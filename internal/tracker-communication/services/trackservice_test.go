@@ -25,8 +25,13 @@ func (repo *deviceRepositoryStub) GetActiveDevice(deviceID string) (sharedmodels
 	return sharedmodels.Device{}, nil
 }
 
-//GetActiveDevice search for device in database
+//GetActiveDeviceByCode search for device in database
 func (repo *deviceRepositoryStub) GetActiveDeviceByCode(deviceID string) (sharedmodels.Device, error) {
+	return sharedmodels.Device{}, nil
+}
+
+//GetActiveDeviceByPINCode search for device in database
+func (repo *deviceRepositoryStub) GetActiveDeviceByPINCode(pinCode string) (sharedmodels.Device, error) {
 	return sharedmodels.Device{}, nil
 }
 
