@@ -27,6 +27,11 @@ func NewDeviceRouter(ctx dbcontext.DbContext) common.Bundle {
 			Path:    "/devices/{pincode}/user",
 			Handler: ctrl.GetUserDevice,
 		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/devices/{pincode}",
+			Handler: ctrl.GetDevice,
+		},
 	}
 
 	return &DeviceRouter{
