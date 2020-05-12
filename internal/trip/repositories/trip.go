@@ -131,11 +131,12 @@ func (repo *tripReposiory) GetTripsByUser(userID string) ([]models.Trip, error) 
 	collection, err := repo.ctx.GetCollection(&models.Trip{})
 
 	matchStage := bson.D{{"$match", bson.D{{"user_id", userID}}}}
+	projectStage := bson.D{{"$project", bson.D{{"tracks", 0}}}}
 
 	ctx := context.TODO()
 	cursor, err := collection.Aggregate(
 		ctx,
-		mongo.Pipeline{matchStage},
+		mongo.Pipeline{matchStage, projectStage},
 	)
 	defer cursor.Close(ctx)
 

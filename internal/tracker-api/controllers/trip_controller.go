@@ -6,6 +6,7 @@ import (
 	"github.com/NicolasDeveloper/tracker-microservices/internal/tracker-api/common"
 	triprepositories "github.com/NicolasDeveloper/tracker-microservices/internal/trip/repositories"
 	"github.com/NicolasDeveloper/tracker-microservices/pkg/database/dbcontext"
+	"github.com/gorilla/mux"
 )
 
 //TripController controller
@@ -23,6 +24,9 @@ func NewTripController(ctx dbcontext.DbContext) TripController {
 
 //Index get
 func (c *TripController) Index(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	userid := params["userid"]
+
 	tripRepository, err := triprepositories.NewTripRepository(c.ctx)
 
 	if err != nil {
@@ -30,7 +34,7 @@ func (c *TripController) Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	trips, err := tripRepository.GetTripsByUser("f81479b5-0aa4-4619-8b2c-7ad583ab4e3c")
+	trips, err := tripRepository.GetTripsByUser(userid)
 
 	if err != nil {
 		c.HandleError(err, w)

@@ -12,14 +12,18 @@ import (
 
 //DeviceController model
 type DeviceController struct {
-	ctx dbcontext.DbContext
+	deviceRepository sharedrepositories.IDeviceRepository
+	ctx              dbcontext.DbContext
 	common.Controller
 }
 
 //NewDeviceController constructor
 func NewDeviceController(ctx dbcontext.DbContext) DeviceController {
+	deviceRepository, _ := sharedrepositories.NewDeviceRepository(ctx)
+
 	return DeviceController{
-		ctx: ctx,
+		ctx:              ctx,
+		deviceRepository: deviceRepository,
 	}
 }
 
@@ -28,8 +32,7 @@ func (c *DeviceController) DeviceIsPluged(w http.ResponseWriter, r *http.Request
 	params := mux.Vars(r)
 	pinCode := params["pincode"]
 
-	deviceRepository, err := sharedrepositories.NewDeviceRepository(c.ctx)
-	device, err := deviceRepository.GetActiveDeviceByPINCode(pinCode)
+	device, err := c.deviceRepository.GetActiveDeviceByPINCode(pinCode)
 
 	if err != nil {
 		c.HandleError(err, w)
@@ -40,6 +43,32 @@ func (c *DeviceController) DeviceIsPluged(w http.ResponseWriter, r *http.Request
 		Result: true,
 		Content: devicedtos.DevicePlugedDTO{
 			IsPlugged: device.Plugged,
+		},
+	}
+
+	c.SendJSON(
+		w,
+		response,
+		http.StatusOK,
+	)
+}
+
+//GetUserDevice get user device
+func (c *DeviceController) GetUserDevice(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	pinCode := params["pincode"]
+
+	device, err := c.deviceRepository.GetActiveDeviceByPINCode(pinCode)
+
+	if err != nil {
+		c.HandleError(err, w)
+		return
+	}
+
+	response := devicedtos.ResponseDTO{
+		Result: true,
+		Content: devicedtos.UserDeviceDTO{
+			UserID: device.UserID,
 		},
 	}
 

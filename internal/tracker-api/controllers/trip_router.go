@@ -19,7 +19,7 @@ func NewTripRouter(ctx dbcontext.DbContext) common.Bundle {
 	r := []common.Route{
 		{
 			Method:  http.MethodGet,
-			Path:    "/trips",
+			Path:    "/trips/{userid}/user",
 			Handler: ctrl.Index,
 		},
 	}
